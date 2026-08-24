@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-ldap/ldap/v3"
-	"github.com/go-ldap/ldif"
+	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/ldif"
 )
 
 var personLDIF = `dn: uid=someone,ou=people,dc=example,dc=org

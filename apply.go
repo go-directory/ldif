@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-ldap/ldap/v3"
+	"github.com/go-directory/dua/v3"
 )
 
 // Apply sends the LDIF entries to the server and does the changes as

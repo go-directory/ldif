@@ -14,7 +14,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-ldap/ldap/v3"
+	"github.com/go-directory/dua/v3"
 )
 
 // Entry is one entry in the LDIF

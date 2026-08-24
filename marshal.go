@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/go-ldap/ldap/v3"
+	"github.com/go-directory/dua/v3"
 )
 
 var foldWidth = 76
