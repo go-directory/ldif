@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 )
 
 // Apply sends the LDIF entries to the server and does the changes as
 // given by the entries.
 //
-// All *ldap.Entry are converted to an *ldap.AddRequest.
+// All *dua.Entry are converted to an *dua.AddRequest.
 //
 // By default, it returns on the first error. To continue with applying the
 // LDIF, set the continueOnErr argument to true - in this case the errors
 // are logged with log.Printf()
-func (l *LDIF) Apply(conn ldap.Client, continueOnErr bool) error {
+func (l *LDIF) Apply(conn dua.Client, continueOnErr bool) error {
 	for _, entry := range l.Entries {
 		switch {
 		case entry.Entry != nil:
-			add := ldap.NewAddRequest(entry.Entry.DN, nil)
+			add := dua.NewAddRequest(entry.Entry.DN, nil)
 			for _, attr := range entry.Entry.Attributes {
 				add.Attribute(attr.Name, attr.Values)
 			}

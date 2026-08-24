@@ -7,7 +7,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 )
 
 var foldWidth = 76
@@ -282,8 +282,8 @@ func foldLine(line string, fw int) (folded string) {
 
 // Dump writes the given entries to the io.Writer.
 //
-// The entries argument can be *ldap.Entry or a mix of *ldap.AddRequest,
-// *ldap.DelRequest and *ldap.ModifyRequest or slices of any of those.
+// The entries argument can be *dua.Entry or a mix of *dua.AddRequest,
+// *dua.DelRequest and *dua.ModifyRequest or slices of any of those.
 //
 // See Marshal() for the fw argument.
 func Dump(fh io.Writer, fw int, entries ...interface{}) error {
@@ -298,41 +298,41 @@ func Dump(fh io.Writer, fw int, entries ...interface{}) error {
 
 // ToLDIF puts the given arguments in an LDIF struct and returns it.
 //
-// The entries argument can be *ldap.Entry or a mix of *ldap.AddRequest,
-// *ldap.DelRequest and *ldap.ModifyRequest or slices of any of those.
+// The entries argument can be *dua.Entry or a mix of *dua.AddRequest,
+// *dua.DelRequest and *dua.ModifyRequest or slices of any of those.
 func ToLDIF(entries ...interface{}) (*LDIF, error) {
 	l := &LDIF{}
 	for _, e := range entries {
 		switch e := e.(type) {
-		case []*ldap.Entry:
+		case []*dua.Entry:
 			for _, en := range e {
 				l.Entries = append(l.Entries, &Entry{Entry: en})
 			}
 
-		case *ldap.Entry:
+		case *dua.Entry:
 			l.Entries = append(l.Entries, &Entry{Entry: e})
 
-		case []*ldap.AddRequest:
+		case []*dua.AddRequest:
 			for _, en := range e {
 				l.Entries = append(l.Entries, &Entry{Add: en})
 			}
 
-		case *ldap.AddRequest:
+		case *dua.AddRequest:
 			l.Entries = append(l.Entries, &Entry{Add: e})
 
-		case []*ldap.DelRequest:
+		case []*dua.DelRequest:
 			for _, en := range e {
 				l.Entries = append(l.Entries, &Entry{Del: en})
 			}
 
-		case *ldap.DelRequest:
+		case *dua.DelRequest:
 			l.Entries = append(l.Entries, &Entry{Del: e})
 
-		case []*ldap.ModifyRequest:
+		case []*dua.ModifyRequest:
 			for _, en := range e {
 				l.Entries = append(l.Entries, &Entry{Modify: en})
 			}
-		case *ldap.ModifyRequest:
+		case *dua.ModifyRequest:
 			l.Entries = append(l.Entries, &Entry{Modify: e})
 
 		default:

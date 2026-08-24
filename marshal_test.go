@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 	"github.com/go-directory/ldif"
 )
 
@@ -31,10 +31,10 @@ ou: people
 
 `
 
-var entries = []*ldap.Entry{
+var entries = []*dua.Entry{
 	{
 		DN: "ou=people,dc=example,dc=org",
-		Attributes: []*ldap.EntryAttribute{
+		Attributes: []*dua.EntryAttribute{
 			{
 				Name: "objectClass",
 				Values: []string{
@@ -50,7 +50,7 @@ var entries = []*ldap.Entry{
 	},
 	{
 		DN: "uid=someone,ou=people,dc=example,dc=org",
-		Attributes: []*ldap.EntryAttribute{
+		Attributes: []*dua.EntryAttribute{
 			{
 				Name: "objectClass",
 				Values: []string{
@@ -76,17 +76,17 @@ var entries = []*ldap.Entry{
 	},
 }
 
-func nPeople(n int) ([]*ldap.Entry, string) {
-	nEntries := make([]*ldap.Entry, n+1)
+func nPeople(n int) ([]*dua.Entry, string) {
+	nEntries := make([]*dua.Entry, n+1)
 	var builder strings.Builder
 
 	nEntries[0] = entries[0]
 	builder.WriteString(ouLDIF)
 
 	for i := 1; i <= n; i++ {
-		nEntries[i] = &ldap.Entry{
+		nEntries[i] = &dua.Entry{
 			DN: fmt.Sprintf("uid=someone%d,ou=people,dc=example,dc=org", i),
-			Attributes: []*ldap.EntryAttribute{
+			Attributes: []*dua.EntryAttribute{
 				{
 					Name: "objectClass",
 					Values: []string{
@@ -249,9 +249,9 @@ ou: people
 description:: VGhlIFBlw7ZwbGUgw5ZyZ2FuaXphdGlvbg==
 
 `
-	entry := &ldap.Entry{
+	entry := &dua.Entry{
 		DN: "ou=people,dc=example,dc=org",
-		Attributes: []*ldap.EntryAttribute{
+		Attributes: []*dua.EntryAttribute{
 			{
 				Name: "objectClass",
 				Values: []string{
@@ -286,9 +286,9 @@ description:: VGhlIFBlw7ZwbGUgw5ZyZ2FuaXphdGlvbg==
 func TestMarshalLeadingTrailingSpace(t *testing.T) {
 	// Values that begin or end with a space must be base64 encoded so they
 	// survive a round-trip (RFC 2849 SAFE-INIT-CHAR / note 8).
-	entry := &ldap.Entry{
+	entry := &dua.Entry{
 		DN: "uid=someone,dc=example,dc=org",
-		Attributes: []*ldap.EntryAttribute{
+		Attributes: []*dua.EntryAttribute{
 			{Name: "description", Values: []string{" leading"}},
 			{Name: "title", Values: []string{"trailing "}},
 			{Name: "colon", Values: []string{":value"}},
@@ -349,7 +349,7 @@ telephoneNumber: 123 456 789 - 0
 -
 
 `
-	mod := ldap.NewModifyRequest("uid=someone,ou=people,dc=example,dc=org", []ldap.Control{})
+	mod := dua.NewModifyRequest("uid=someone,ou=people,dc=example,dc=org", []dua.Control{})
 	mod.Replace("sn", []string{"One"})
 	mod.Add("givenName", []string{"Some"})
 	mod.Delete("mail", []string{})
@@ -380,7 +380,7 @@ cn: Someone
 mail: someone@example.org
 
 `
-	add := ldap.NewAddRequest("uid=someone,ou=people,dc=example,dc=org", []ldap.Control{})
+	add := dua.NewAddRequest("uid=someone,ou=people,dc=example,dc=org", []dua.Control{})
 	for _, a := range entries[1].Attributes {
 		add.Attribute(a.Name, a.Values)
 	}
@@ -403,7 +403,7 @@ func TestMarshalDel(t *testing.T) {
 changetype: delete
 
 `
-	del := ldap.NewDelRequest("uid=someone,ou=people,dc=example,dc=org", nil)
+	del := dua.NewDelRequest("uid=someone,ou=people,dc=example,dc=org", nil)
 	l := &ldif.LDIF{
 		Entries: []*ldif.Entry{
 			{Del: del},
@@ -423,7 +423,7 @@ func TestDump(t *testing.T) {
 changetype: delete
 
 `
-	del := ldap.NewDelRequest("uid=someone,ou=people,dc=example,dc=org", nil)
+	del := dua.NewDelRequest("uid=someone,ou=people,dc=example,dc=org", nil)
 	buf := bytes.NewBuffer(nil)
 	err := ldif.Dump(buf, 0, del)
 	if err != nil {

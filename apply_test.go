@@ -4,21 +4,21 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 	"github.com/go-directory/ldif"
 )
 
-// recordingConn records the requests passed to it and satisfies ldap.Client
+// recordingConn records the requests passed to it and satisfies dua.Client
 // via an embedded nil interface (only the methods Apply calls are implemented).
 type recordingConn struct {
-	ldap.Client
-	adds    []*ldap.AddRequest
-	dels    []*ldap.DelRequest
-	mods    []*ldap.ModifyRequest
+	dua.Client
+	adds    []*dua.AddRequest
+	dels    []*dua.DelRequest
+	mods    []*dua.ModifyRequest
 	failAdd bool
 }
 
-func (c *recordingConn) Add(r *ldap.AddRequest) error {
+func (c *recordingConn) Add(r *dua.AddRequest) error {
 	c.adds = append(c.adds, r)
 	if c.failAdd {
 		return errors.New("boom")
@@ -26,12 +26,12 @@ func (c *recordingConn) Add(r *ldap.AddRequest) error {
 	return nil
 }
 
-func (c *recordingConn) Del(r *ldap.DelRequest) error {
+func (c *recordingConn) Del(r *dua.DelRequest) error {
 	c.dels = append(c.dels, r)
 	return nil
 }
 
-func (c *recordingConn) Modify(r *ldap.ModifyRequest) error {
+func (c *recordingConn) Modify(r *dua.ModifyRequest) error {
 	c.mods = append(c.mods, r)
 	return nil
 }

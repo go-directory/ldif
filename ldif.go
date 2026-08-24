@@ -14,15 +14,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 )
 
 // Entry is one entry in the LDIF
 type Entry struct {
-	Entry  *ldap.Entry
-	Add    *ldap.AddRequest
-	Del    *ldap.DelRequest
-	Modify *ldap.ModifyRequest
+	Entry  *dua.Entry
+	Add    *dua.AddRequest
+	Del    *dua.DelRequest
+	Modify *dua.ModifyRequest
 }
 
 // The LDIF struct is used for parsing an LDIF. The Controls
@@ -224,7 +224,7 @@ func (l *LDIF) parseEntry(lines []string) (entry *Entry, err error) {
 	}
 	lines = lines[1:]
 
-	var controls []ldap.Control
+	var controls []dua.Control
 	controls, lines, err = l.parseControls(lines)
 	if err != nil {
 		return nil, err
@@ -250,7 +250,7 @@ func (l *LDIF) parseEntry(lines []string) (entry *Entry, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return &Entry{Entry: ldap.NewEntry(dn, attrs)}, nil
+		return &Entry{Entry: dua.NewEntry(dn, attrs)}, nil
 
 	case "add":
 		attrs, err := l.parseAttrs(lines)
@@ -258,7 +258,7 @@ func (l *LDIF) parseEntry(lines []string) (entry *Entry, err error) {
 			return nil, err
 		}
 		// FIXME: controls for add - see https://github.com/go-ldap/ldap/issues/81
-		add := ldap.NewAddRequest(dn, controls)
+		add := dua.NewAddRequest(dn, controls)
 		for attr, vals := range attrs {
 			add.Attribute(attr, vals)
 		}
@@ -268,11 +268,11 @@ func (l *LDIF) parseEntry(lines []string) (entry *Entry, err error) {
 		if len(lines) > 1 {
 			return nil, errors.New("no attributes allowed for changetype delete")
 		}
-		return &Entry{Del: ldap.NewDelRequest(dn, controls)}, nil
+		return &Entry{Del: dua.NewDelRequest(dn, controls)}, nil
 
 	case "modify":
 		// FIXME: controls for modify - see https://github.com/go-ldap/ldap/issues/81
-		mod := ldap.NewModifyRequest(dn, controls)
+		mod := dua.NewModifyRequest(dn, controls)
 		var op, attribute string
 		var values []string
 		if lines[len(lines)-1] != "-" {
@@ -388,8 +388,8 @@ func (l *LDIF) parseLine(line string) (attr, val string, err error) {
 	return
 }
 
-func (l *LDIF) parseControls(lines []string) ([]ldap.Control, []string, error) {
-	var controls []ldap.Control
+func (l *LDIF) parseControls(lines []string) ([]dua.Control, []string, error) {
+	var controls []dua.Control
 	for {
 		if !strings.HasPrefix(lines[0], "control:") {
 			break
@@ -434,8 +434,8 @@ func (l *LDIF) parseControls(lines []string) ([]ldap.Control, []string, error) {
 		}
 		if ctrlValue == "" {
 			switch oid {
-			case ldap.ControlTypeManageDsaIT:
-				controls = append(controls, &ldap.ControlManageDsaIT{Criticality: criticality})
+			case dua.ControlTypeManageDsaIT:
+				controls = append(controls, &dua.ControlManageDsaIT{Criticality: criticality})
 			default:
 				return nil, nil, fmt.Errorf("unsupported control found: %s", oid)
 			}
@@ -467,10 +467,10 @@ func (l *LDIF) parseControls(lines []string) ([]ldap.Control, []string, error) {
 			}
 			// TODO:
 			// convert ctrlValue to *ber.Packet and decode with something like
-			//   ctrl := ldap.DecodeControl()
+			//   ctrl := dua.DecodeControl()
 			// ... FIXME: the controls need a Decode() interface
 			// so we can just do a
-			//   ctrl := ldap.ControlByOID(oid) // returns an empty &ControlSomething{}
+			//   ctrl := dua.ControlByOID(oid) // returns an empty &ControlSomething{}
 			//   ctrl.Decode((*ber.Packet)(ctrlValue))
 			//   ctrl.Criticality = criticality
 			// that should be usable in github.com/go-ldap/ldap/control.go also
@@ -559,8 +559,8 @@ func validAttr(attr string) error {
 	return nil
 }
 
-// AllEntries returns all *ldap.Entries in the LDIF
-func (l *LDIF) AllEntries() (entries []*ldap.Entry) {
+// AllEntries returns all *dua.Entries in the LDIF
+func (l *LDIF) AllEntries() (entries []*dua.Entry) {
 	for _, entry := range l.Entries {
 		if entry.Entry != nil {
 			entries = append(entries, entry.Entry)

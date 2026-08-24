@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 	"github.com/go-directory/ldif"
 )
 
@@ -99,9 +99,9 @@ changetype: delete
 			if len(ctrls) != 1 {
 				t.Fatalf("expected 1 control, got %d", len(ctrls))
 			}
-			c, ok := ctrls[0].(*ldap.ControlManageDsaIT)
+			c, ok := ctrls[0].(*dua.ControlManageDsaIT)
 			if !ok {
-				t.Fatalf("expected *ldap.ControlManageDsaIT, got %T", ctrls[0])
+				t.Fatalf("expected *dua.ControlManageDsaIT, got %T", ctrls[0])
 			}
 			if c.Criticality != tc.wantCriticality {
 				t.Errorf("criticality = %v, want %v", c.Criticality, tc.wantCriticality)

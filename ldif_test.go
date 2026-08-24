@@ -8,7 +8,7 @@ import (
 	"testing"
 	"testing/iotest"
 
-	"github.com/go-directory/dua/v3"
+	"github.com/go-directory/dua"
 	"github.com/go-directory/ldif"
 )
 
@@ -510,13 +510,13 @@ func TestParseModify(t *testing.T) {
 }
 
 // countChangeType is a helper function to minimise test changes migrating to ldapv3
-func countChangeType(typ string, ch []ldap.Change) []ldap.Change {
+func countChangeType(typ string, ch []dua.Change) []dua.Change {
 	var t = map[string]uint{
 		"add":     0,
 		"delete":  1,
 		"replace": 2,
 	}
-	c := []ldap.Change{}
+	c := []dua.Change{}
 	for _, i := range ch {
 		if i.Operation == t[typ] {
 			c = append(c, i)
